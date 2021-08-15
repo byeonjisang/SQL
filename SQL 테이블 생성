@@ -1,0 +1,15 @@
+create global temporary table salgrade // 임시 테이블을 생성하는 함수 ( global temporary), 영구 생성 시에는 그냥 create table 함수를 이용
+( grade   number(10), // 컬럼 생성 시에 반드시 문자로 시작해야 하며 (숫자 금지), 길이는 30 이하여야 한다
+  losal   number(10), // 알파벳 대소문자, 숫자도 가능하지만 특수문자는 $, _ , # 만 입력 가능하다
+  hisal   number(10) )
+  
+  on commit preserve rows; // 임시 생성된 테이블을 세션 로그아웃 시 소멸
+  on commit delete rows; // 임시 생성된 테이블이 커밋 시에 소멸
+  
+insert into salgrade  values(1,700,1200); // 컬럼 값 입력 시에는 insert into 컬럼명 순으로 작성하며
+insert into salgrade  values(2,1201,1400); // values를 이용해 세부적인 값을 입력한다. 단, 생성된 컬럼의 순서를 지켜야 제대로 값이 입력된다.
+insert into salgrade  values(3,1401,2000);
+insert into salgrade  values(4,2001,3000);
+insert into salgrade  values(5,3001,9999);
+
+commit;
