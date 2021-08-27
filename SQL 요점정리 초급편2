@@ -1,0 +1,29 @@
+## 데이터를 분석하는 함수 ##
+
+[[ RANK/DENSE_RANK(데이터값 or 공백) over (조건) // 조건대로 값들을 순위로 나열
+* RANK는 순위중복 상관없이, DENSE_RANK는 중복없이 순위를 나열한다.
+ex) SELECT ename, sal, DENSE_RANK() over (order by sal desc) => sal을 내림차순으로 중복없이 순위 출력.
+
+NTILE(숫자) over (조건) // 조건대로 데이터를 등급으로 출력할 때 사용.
+ex) SELECT NTILE(4) over ( order by sal desc nulls last ) => null값을 마지막으로 정렬하고 sal 값들을 4개의 등급으로 출력.
+
+CUME_DIST() over (조건) // 조건대로 데이터 값들을 비율로 출력할 때 사용.
+
+* 조건 안에 partition by (컬럼명) 라는 함수 사용 가능 > 컬럼별로 묶어서 순위/등급/비율을 출력. ]]
+
+
+LISTAGG(컬럼명,추가할 문자) within group(조건)  // 분석한 데이터 함수를 가로로 출력할 때 사용.
+ex) SELECT LISTAGG(ename,',') within group (order by ename) => ename의 값들을 ,를 추가하여 가로로 나열.
+
+LAG/LEAD(컬럼명, 행의 갯수) over (조건) // 컬럼 값을 조건대로 전 행/다음 행을 출력함.
+ex) SELECT LAG/LEAD(sal,1) over (order by sal asc) => sal의 데이테를 오름차순 정렬 후, 바로 전/다음 행을 출력
+* 출력 할 경우, 첫 데이터랑 마지막 데이터가 비는 경우에는 무조건 null로 처리된다.
+
+SUM+DECODE (컬럼명, 이름, 출력할 컬럼) // 컬럼을 행으로 출력할 때 사용.
+ex) SUM(DECODE(deptno,10,sal)) => deptno = 10을 만족하는 sal의 총 합을 출력.
+* 만약 null값이 존재할 경우 자동으로 제외시키고 출력한다.
+
+PIVOT(조건) // SUM+DECODE를 축약시킨 함수. 좀 더 편리하다.
+ex) SELECT *
+FROM (select deptno, sal from emp)
+PIVOT (sum(sal) for deptno in (10,20,30)) => 테이블 전체 호출 후 deptno가 각각 10 20 30 인 sal의 토탈을 출력.
