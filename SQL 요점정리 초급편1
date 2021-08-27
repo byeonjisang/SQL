@@ -22,3 +22,17 @@ ADD_MONTHS(TO_DATE(날짜, 날짜양식), 개월 수) // 해당 숫자만큼 개
 ex) SELECT TO_DATE('2021-08-22','RRRR-MM-DD') + interval '1-3' year(1) to month // 현 날짜에서 1년 3개월을 더해준다는 의미이다.
 INTERVAL 함수는 년도부터 초까지 다양하게 사용가능, 숫자 표현 시에는 복수형을 쓰지 않는다 ( interval 10 day )
 
+## 암시적 형 변환 ##
+WHERE sal = '3000' 을 실행할 때, 싱글 쿼테이션이 붙은 3000은 문자형으로 인식되어 문자형=문자형으로 비교되는 것이 정상이지만,
+오라클 서버에서 이를 알아서 암시적으로 형을 변환하여 숫자형=숫자형으로 결과값을 출력한다.
+오라클이 수행한 SQL은 WHERE TO_NUMBER(SAL) = 3000 이다. TO_NUMBER을 사용하여 일시적으로 형 변환을 시도했다.
+
+NVL/NVL2 (null값인 컬럼, 변경할 문자) // 값이 null인 곳을 다른 데이터로 대체할 때 사용.
+* 하나의 값이 null이 되어 다른 값에 영향을 줄 경우, null을 변경해주면 또한 결과에 영향을 미친다.
+
+DECODE/CASE WHEN (조건) // 프로그래밍 함수인 if 와 같은 역할을 한다.
+ex) DECODE(deptno,10,300,20,400,0) = if deptno=10 print 300 else deptno=20 print 400 else print 0
+* DECODE 와 CASE WHEN 의 차이점 > CASE WHEN은 DECODE와 달리 문자열도 사용이 가능하다.
+
+MAX/MIN/AVG/SUM/COUNT (컬럼명) // 해당 컬럼의 최대값/최소값/평균값/토탈값/건수 를 출력할 때 사용한다.
+* 이 함수들은 다른 함수와도 겹쳐 사용이 가능하다. ex) ROUND(AVG(NVL(com,0))) = null값을 0으로 바꾸어 평균을 낸 후, 반올림하여 출력한다.
