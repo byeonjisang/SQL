@@ -9,14 +9,14 @@ ex) SELECT NTILE(4) over ( order by sal desc nulls last ) => null값을 마지�
 
 CUME_DIST() over (조건) // 조건대로 데이터 값들을 비율로 출력할 때 사용.
 
-* 조건 안에 partition by (컬럼명) 라는 함수 사용 가능 > 컬럼별로 묶어서 순위/등급/비율을 출력. ]]
+* 조건 안에 partition by (컬럼명) 라는 함수 사용 가능 > 컬럼별로 묶어서 순위/등급/비율을 출력. 다른 함수에도 적용 가능하다. ]]
 
 
 LISTAGG(컬럼명,추가할 문자) within group(조건)  // 분석한 데이터 함수를 가로로 출력할 때 사용.
 ex) SELECT LISTAGG(ename,',') within group (order by ename) => ename의 값들을 ,를 추가하여 가로로 나열.
 
 LAG/LEAD(컬럼명, 행의 갯수) over (조건) // 컬럼 값을 조건대로 전 행/다음 행을 출력함.
-ex) SELECT LAG/LEAD(sal,1) over (order by sal asc) => sal의 데이테를 오름차순 정렬 후, 바로 전/다음 행을 출력
+ex) SELECT LAG/LEAD(sal,1) over (order by sal asc) => sal의 데이터를 오름차순 정렬 후, 바로 전/다음 행을 출력
 * 출력 할 경우, 첫 데이터랑 마지막 데이터가 비는 경우에는 무조건 null로 처리된다.
 
 SUM+DECODE (컬럼명, 이름, 출력할 컬럼) // 컬럼을 행으로 출력할 때 사용.
@@ -26,4 +26,21 @@ ex) SUM(DECODE(deptno,10,sal)) => deptno = 10을 만족하는 sal의 총 합을 
 PIVOT(조건) // SUM+DECODE를 축약시킨 함수. 좀 더 편리하다.
 ex) SELECT *
 FROM (select deptno, sal from emp)
-PIVOT (sum(sal) for deptno in (10,20,30)) => 테이블 전체 호출 후 deptno가 각각 10 20 30 인 sal의 토탈을 출력.
+PIVOT (sum(sal) for deptno in (10,20,30)) => 테이블 전체 호출 후 deptno가 각각 10 20 30 인 sal의 토탈을 출력
+* 문자열 출력시 싱글쿼테이샨 -> 더블 쿼테이션으로 변경 필요!
+UNPIVOT (조건) // 테이블의 열을 행으로 출력할 때 사용.
+ex) UNPIVOT INCLUDES NULLS (건수 for 아이템 in (문자열)) => null 값을 포함시켜서 언피벗시킨다.
+
+ROLLUP (컬럼) // 컬렴의 전체 합계를 출력
+* 컬럼을 여러개 사용가능. 
+
+CUBE(컬럼) // ROLLUP과 동일한 기능. 하지만, 전체 결과를 출력 후 컬럼별로 경우의 수 호출.
+* 컬럼이 여러개일 경우, ROLLUP은 끝에서부터 하나씩 배제하며 출력하지만, CUBE는 모든 경우를 출력한다. 
+ex) ROLLUP(deptno, job) => 부서번호별 직업 출력 & 직업 출력 CUBE(deptno, job) => 부서번호별 직업 & 부서번호별 & 직업별 & 전체 출력
+
+GROUPING SETS // ROLLUP&CUBE 와 기능은 동일. 하지만 좀 더 편리하게 출력 가능.
+ex) GROUP BY GROUPING SETS((deptno),(job),()) => 부서번호별 & 직업별 & 전체 출력
+* GROUPING SETS는 컬럼별 경우의 수를 선택하여 출력가능.
+
+ROW_NUMBER() over (조건) // 데이터를 분석하여 결과를 넘버링할 때 쓰는 함수
+ex) ROW_NUMBER() over (order by sal desc) => sal의 값을 내림차순 정렬하여 넘버링.
